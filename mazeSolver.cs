@@ -12,6 +12,7 @@ namespace Maze_Solver
     {
         static void Main(string[] args)
         {
+            //Splits the maze string into a 2D char array
             string maze = "########\n#S....##\n#.##.#E#\n#......#\n########";
             string[] lines = maze.Trim().Split('\n');
             int rows = lines.Length;
@@ -24,6 +25,8 @@ namespace Maze_Solver
                     cells[i, j] = lines[i][j];
                 }
             }
+
+            //Finds the position of the start
             (int, int) start = (-1, -1);
             bool[,] visited = new bool[rows, columns];
             List<(int, int)> path = new List<(int, int)>();
@@ -37,6 +40,8 @@ namespace Maze_Solver
                     }
                 }
             }
+
+            //Marks the successful path found by DFS
             if (DFS(cells, rows, columns, start.Item1, start.Item2, visited, path))
             {
                 foreach ((int, int) point in path)
@@ -63,41 +68,51 @@ namespace Maze_Solver
 
         static bool DFS(char[,] cells, int rows, int columns, int row, int col, bool[,] visited, List<(int, int)> path)
         {
+            //Checks if the move is illegal
             if (row < 0 || row >= rows || col < 0 || col >= columns)
             {
                 return false;
             }
+            //Checks if hit a wall
             else if (cells[row, col] == '#')
             {
                 return false;
             }
+            //Checks if already been there
             else if (visited[row, col])
             {
                 return false;
             }
+            //Checks if reached the end
             else if (cells[row, col] == 'E')
             {
                 path.Add((row, col));
                 return true;
             }
+            //Mark this cell as visited
             visited[row, col] = true;
             path.Add((row, col));
+            //Recursively search upwards
             if (DFS(cells, rows, columns, row - 1, col, visited, path))
             {
                 return true;
             }
+            //Recursively search downwards
             if (DFS(cells, rows, columns, row + 1, col, visited, path))
             {
                 return true;
             }
+            //Recursively search left
             if (DFS(cells, rows, columns, row, col - 1, visited, path))
             {
                 return true;
             }
+            //Recursively search right
             if (DFS(cells, rows, columns, row, col + 1, visited, path))
             {
                 return true;
             }
+            //If this is the wrong way, remove it from the path
             path.RemoveAt(path.Count - 1);
             return false;
         }
